@@ -42,19 +42,19 @@ int main() {
 
         switch (choice) {
             case 1:
-                createProduct();
+                create();
                 break;
             case 2:
-                displayAllProducts();
+                display();
                 break;
             case 3:
-                updateProduct();
+                update_product();
                 break;
             case 4:
-                deleteProduct();
+                delete_product();
                 break;
             case 5:
-                customerPurchase();
+                customer();
                 break;
             case 0:
                 // --- NEW ---
