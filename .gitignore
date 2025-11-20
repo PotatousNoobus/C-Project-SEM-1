@@ -1,0 +1,31 @@
+# Compiled binary
+supermarket
+
+# Object files
+*.o
+*.obj
+
+# Database files
+*.dat
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
