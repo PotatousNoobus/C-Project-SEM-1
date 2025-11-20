@@ -1,15 +1,14 @@
 #include <stdio.h>
-#include <stdlib.h> // For malloc() and free()
+#include <stdlib.h>
 #include <string.h>
 #include "data.h"
 
 // --- Global Variable ---
 // This is the "head" of our linked list. It's the entry point.
 // It's defined here in the .c file.
-struct Product *g_productListHead = NULL;
+typedef struct product Product;
 
-
-// --- List Management Functions ---
+Product *product_lis_head = NULL;
 
 void loadDatabase() {
     FILE *file = fopen(DB_FILE, "rb");
@@ -18,30 +17,30 @@ void loadDatabase() {
         return;
     }
 
-    struct Product tempProduct;
+    Product tempProduct;
     // Read one product at a time from the file
-    while (fread(&tempProduct, sizeof(struct Product), 1, file)) {
+    while (fread(&tempProduct, sizeof(Product), 1, file)) {
         // For each product, allocate memory for a new list node
-        struct Product *newNode = (struct Product*)malloc(sizeof(struct Product));
+        Product *newNode = (Product *)malloc(sizeof(Product));
         if (newNode == NULL) {
             printf("Error: Out of memory during database load.\n");
             fclose(file);
             return;
         }
 
-        // Copy the data from the file struct into our new node
+
         *newNode = tempProduct;
         // IMPORTANT: The 'next' pointer read from the file is garbage.
         // We must set it to NULL.
         newNode->next = NULL;
 
         // Add the new node to the end of our list
-        if (g_productListHead == NULL) {
+        if (product_lis_head == NULL) {
             // List is empty, this is the first node
-            g_productListHead = newNode;
+            product_lis_head = newNode;
         } else {
             // Find the end of the list
-            struct Product *current = g_productListHead;
+            Product *current = product_lis_head;
             while (current->next != NULL) {
                 current = current->next;
             }
@@ -62,12 +61,12 @@ void saveDatabase() {
         return;
     }
 
-    struct Product *current = g_productListHead;
+    Product *current = product_lis_head;
     while (current != NULL) {
         // Write the *entire* product struct to the file.
         // The 'next' pointer is also written, but it's okay.
         // Our loadDatabase() function knows to ignore it.
-        fwrite(current, sizeof(struct Product), 1, file);
+        fwrite(current, sizeof(Product), 1, file);
         current = current->next;
     }
 
@@ -76,209 +75,171 @@ void saveDatabase() {
 }
 
 void freeList() {
-    struct Product *current = g_productListHead;
-    struct Product *temp;
+    Product *current = product_lis_head;
+    Product *temp;
 
     while (current != NULL) {
         temp = current;          // Remember the current node
         current = current->next; // Move to the next node
         free(temp);              // Free the one we remembered
     }
-    g_productListHead = NULL;
-    printf("All memory freed.\n");
+    product_lis_head = NULL;
+    printf("Memory freed.\n");
 }
 
-// Helper function to get the next available ID *from the list*
 int getNextId() {
-    int maxId = 0;
-    struct Product *current = g_productListHead;
+    int last_id = 0;
+    Product *current = product_lis_head;
 
     while (current != NULL) {
-        if (current->id > maxId) {
-            maxId = current->id;
+        if (current->id > last_id) {
+            last_id = current->id;
         }
         current = current->next;
     }
-    return maxId + 1;
+    return last_id + 1;
 }
 
-// --- Core App Functions (Linked List) ---
+void create() {
 
-// 1. CREATE
-void createProduct() {
-    // 1. Allocate memory for the new node
-    struct Product *newNode = (struct Product*)malloc(sizeof(struct Product));
+    Product *newNode = (Product *)malloc(sizeof(Product));
     if (newNode == NULL) {
-        printf("Error: Out of memory. Cannot add new product.\n");
+        printf("Malloc failed.\n");
         return;
     }
-
-    // 2. Get product details from user
     newNode->id = getNextId();
-    printf("Adding new product (ID: %d)\n", newNode->id);
-
     printf("Enter product name: ");
-    fgets(newNode->name, 100, stdin);
-    newNode->name[strcspn(newNode->name, "\n")] = 0;
+    scanf("%[^\n]", newNode->name);
+    while (getchar() != '\n');
+    //fgets(newNode->name, 100, stdin);
+    //newNode->name[strcspn(newNode->name, "\n")] = 0;
 
     printf("Enter price: ");
     scanf("%f", &newNode->price);
 
     printf("Enter quantity in stock: ");
     scanf("%d", &newNode->quantity);
-    while (getchar() != '\n'); // Clear buffer
-
-    newNode->next = NULL; // This node will be at the end
-
-    // 3. Add the new node to the end of the list
-    if (g_productListHead == NULL) {
-        // List is empty
-        g_productListHead = newNode;
-    } else {
-        // Find the end
-        struct Product *current = g_productListHead;
-        while (current->next != NULL) {
-            current = current->next;
-        }
-        current->next = newNode; // Link the last node to the new one
+    while (getchar() != '\n');
+    if (product_lis_head == NULL){
+        product_lis_head = newNode;
+    }
+    else {
+        newNode->next = product_lis_head;
     }
 
-    printf("Product added successfully (to memory).\n");
+    printf("Product added successfully.\n");
 }
 
-// 2. READ (Display All)
-void displayAllProducts() {
-    struct Product *current = g_productListHead;
+void display() {
+    Product *current = product_lis_head;
     int found = 0;
 
-    printf("\n--- SUPERMARKET INVENTORY (from memory) ---\n");
+    printf("\n--- SUPERMARKET INVENTORY ---\n");
     printf("----------------------------------------------------\n");
     printf("| ID   | Name                 | Price    | Stock   |\n");
     printf("----------------------------------------------------\n");
 
     while (current != NULL) {
-        printf("| %-4d | %-20s | %-8.2f | %-7d |\n",
-               current->id,
-               current->name,
-               current->price,
-               current->quantity);
+        printf("| %d | %s | %f | %d |\n",current->id,current->name,current->price,current->quantity);
         found = 1;
         current = current->next; // Move to the next item
     }
-    printf("----------------------------------------------------\n");
-
-    if (!found) {
-        printf("No products in stock.\n");
+    printf("****************************************************\n");
+    if (found==0) {
+        printf("No products available.\n");
     }
 }
 
-// 3. UPDATE
-void updateProduct() {
+void update_product() {
     int id;
-    printf("\n--- Update Product ---\n");
     printf("Enter product ID to update: ");
     scanf("%d", &id);
-    while (getchar() != '\n'); // Clear buffer
+    while (getchar() != '\n');
 
-    // Find the product in the list
-    struct Product *current = g_productListHead;
-    while (current != NULL) {
-        if (current->id == id) {
-            // Found it!
-            printf("Found product: %s. Enter new details:\n", current->name);
+    Product *curr = product_lis_head;
+    while (curr != NULL) {
+        if (curr->id == id) {
+            printf("Found product: %s.\n",curr->name);
 
-            printf("Enter new name: ");
-            fgets(current->name, 100, stdin);
-            current->name[strcspn(current->name, "\n")] = 0;
+            printf("Enter a new name: ");
+            scanf("%[^\n]", curr->name);
+            while (getchar() != '\n');
 
-            printf("Enter new price: ");
-            scanf("%f", &current->price);
+            printf("Enter the new price: ");
+            scanf("%f", &curr->price);
 
-            printf("Enter new quantity: ");
-            scanf("%d", &current->quantity);
+            printf("Enter the new quantity: ");
+            scanf("%d", &curr->quantity);
             while (getchar() != '\n'); // Clear buffer
 
-            printf("Product ID %d updated successfully.\n", id);
+            printf("Product with ID %d was updated successfully.\n", id);
             return;
         }
-        current = current->next;
+        curr = curr->next;
     }
 
-    printf("Error: Product ID %d not found.\n", id);
+    printf("A product with ID %d does not exist.\n",id);
 }
 
-// 4. DELETE
-void deleteProduct() {
+void delete_product() {
     int id;
-    printf("\n--- Delete Product ---\n");
     printf("Enter product ID to delete: ");
     scanf("%d", &id);
     while (getchar() != '\n'); // Clear buffer
 
-    struct Product *current = g_productListHead;
-    struct Product *previous = NULL;
+    Product *current = product_lis_head;
+    Product *prev = NULL;
 
-    // Iterate the list to find the node
-    while (current != NULL) {
-        if (current->id == id) {
-            // Found the node to delete
-            if (previous == NULL) {
-                // This is the *first* node (the head)
-                g_productListHead = current->next;
-            } else {
-                // This is a node in the middle or end
-                previous->next = current->next;
-            }
-
-            free(current); // Free the memory!
-            printf("Product ID %d deleted successfully.\n", id);
-            return;
-        }
-
-        // Move to the next node
-        previous = current;
+    if (current!=NULL && current->id == id) {
+        product_lis_head = current->next;
+        free(current);
+        printf("Product deleted successfully.\n");
+        return;
+    }
+    while (current != NULL && current->id != id) {
+        prev = current;
         current = current->next;
     }
-
-    printf("Error: Product ID %d not found.\n", id);
+    if (current==NULL) {
+        printf("Product not found.\n");
+        return;
+    }
+    else if (current != NULL) {
+        prev->next = current->next;
+        free(current);
+        printf("Product deleted successfully.\n");
+        return;
+    }
 }
 
-// 5. CUSTOMER PURCHASE
-void customerPurchase() {
-    int id, amountToBuy;
-    displayAllProducts(); // Show the customer what's available
-
-    printf("\n--- Customer Purchase ---\n");
+void customer() {
+    int id, amount;
+    display();
     printf("Enter product ID to purchase: ");
     scanf("%d", &id);
 
-    // Find the product in the list
-    struct Product *current = g_productListHead;
+    Product *current = product_lis_head;
+
     while (current != NULL) {
         if (current->id == id) {
-            // Found the product
-            printf("Enter quantity to buy for %s (in stock: %d): ", current->name, current->quantity);
-            scanf("%d", &amountToBuy);
+
+            printf("Enter quantity to buy (in stock: %d): ", current->quantity);
+            scanf("%d", &amount);
             while (getchar() != '\n'); // Clear buffer
 
-            if (amountToBuy <= 0) {
+            if (amount <= 0 || amount > current->quantity ) {
                 printf("Invalid quantity.\n");
                 return;
             }
 
-            if (amountToBuy > current->quantity) {
-                printf("Sorry, not enough stock. Only %d available.\n", current->quantity);
-                return;
-            }
+            current->quantity -= amount;
 
-            // Process the purchase
-            current->quantity -= amountToBuy;
-            printf("Purchase successful! Total cost: $%.2f\n", current->price * amountToBuy);
-            printf("Remaining stock for %s: %d\n", current->name, current->quantity);
+            printf("Purchase successful! Total bill amount: $%.2f\n", current->price * amount);
+            //printf("Remaining stock for %s: %d\n", current->name, current->quantity);
             return;
         }
         current = current->next;
     }
 
-    printf("Error: Product ID %d not found.\n", id);
+    printf("Error: Product ID %d was not found.\n", id);
 }
