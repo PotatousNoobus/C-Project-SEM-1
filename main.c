@@ -8,7 +8,7 @@ void menu() {
     printf("  SUPERMARKET MANAGEMENT SYSTEM \n");
     printf("===================================\n");
     printf("1. Add New Product (admin)\n");
-    printf("2. Display All Products (admin)\n");
+    printf("2. Display All Products\n");
     printf("3. Update Product (admin)\n");
     printf("4. Delete Product (admin)\n");
     printf("************************************\n");
@@ -19,21 +19,35 @@ void menu() {
     printf("Enter your choice: ");
 }
 
-int main() {
+int main(void) {
     int choice;
+    int c;
+
     loadDatabase();
 
-    scanf("%d",&choice);
-    while (choice!=0) {
+    while (1) {
         menu();
 
-        if (choice!=1 && choice != 0 && choice!=2 && choice!=3 && choice !=4 && choice !=5) {
+        if (scanf("%d", &choice) != 1) {
             printf("Invalid input. Please enter a number (0 - 5).\n");
-            while (getchar() != '\n');
+
+            while ((c = getchar()) != '\n' && c != EOF);
             continue;
         }
 
-        while (getchar() != '\n');
+        while ((c = getchar()) != '\n' && c != EOF);
+
+        if (choice < 0 || choice > 5) {
+            printf("Invalid input. Please enter a number (0 - 5).\n");
+            continue;
+        }
+
+        if (choice == 0) {
+            saveDatabase();
+            free_memory();
+            printf("Thank you for shopping with us. See you soon !!\n");
+            break;
+        }
 
         switch (choice) {
             case 1:
@@ -51,19 +65,11 @@ int main() {
             case 5:
                 customer();
                 break;
-            case 0:
-                saveDatabase();
-                free_memory();
-
-                printf("Thank you for shopping with us. See you soon !!");
-                break;
             default:
                 printf("Invalid choice. Please try again.\n");
+                break;
         }
-        scanf("%d",&choice);
     }
-
-
 
     return 0;
 }
