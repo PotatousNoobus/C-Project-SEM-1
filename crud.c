@@ -3,9 +3,6 @@
 #include <string.h>
 #include "data.h"
 
-// --- Global Variable ---
-// This is the "head" of our linked list. It's the entry point.
-// It's defined here in the .c file.
 typedef struct product Product;
 
 Product *product_lis_head = NULL;
@@ -74,7 +71,7 @@ void saveDatabase() {
     printf("Database saved successfully.\n");
 }
 
-void freeList() {
+void free_memory() {
     Product *current = product_lis_head;
     Product *temp;
 
@@ -107,12 +104,14 @@ void create() {
         printf("Malloc failed.\n");
         return;
     }
+    newNode->next = NULL;
     newNode->id = getNextId();
+
+
     printf("Enter product name: ");
     scanf("%[^\n]", newNode->name);
     while (getchar() != '\n');
-    //fgets(newNode->name, 100, stdin);
-    //newNode->name[strcspn(newNode->name, "\n")] = 0;
+
 
     printf("Enter price: ");
     scanf("%f", &newNode->price);
@@ -120,11 +119,23 @@ void create() {
     printf("Enter quantity in stock: ");
     scanf("%d", &newNode->quantity);
     while (getchar() != '\n');
+
     if (product_lis_head == NULL){
         product_lis_head = newNode;
     }
-    else {
+    else if (newNode->price < product_lis_head->price) {
         newNode->next = product_lis_head;
+        product_lis_head = newNode;
+    }
+    else {
+        Product *current = product_lis_head;
+
+        while (current->next != NULL && current->next->price <= newNode->price) {
+            current = current->next;
+        }
+        newNode->next = current->next;
+        current->next = newNode;
+
     }
 
     printf("Product added successfully.\n");
