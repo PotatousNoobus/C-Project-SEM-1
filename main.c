@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include "data.h"
 
-// Function to display the main menu
 void menu() {
     printf("\n===================================\n");
     printf("  SUPERMARKET MANAGEMENT SYSTEM \n");
@@ -12,7 +11,7 @@ void menu() {
     printf("3. Update Product (admin)\n");
     printf("4. Delete Product (admin)\n");
     printf("************************************\n");
-    printf("5. Make a Purchase (Customer)\n");
+    printf("5. Purchase (Customer)\n");
     printf("0. Exit\n");
     printf("===================================\n");
     printf("===================================\n");

@@ -47,10 +47,10 @@ void loadDatabase() {
 }
 
 void saveDatabase() {
-    // "wb" = write binary. This overwrites the old file.
+
     FILE *file = fopen(DB_FILE, "wb");
     if (file == NULL) {
-        printf("Error: Could not open database file for saving.\n");
+        printf("Error: Could not open database file.\n");
         return;
     }
 
@@ -103,14 +103,14 @@ void create() {
 
     printf("Enter product name: ");
     scanf("%[^\n]", newNode->name);
-    while (getchar() != '\n');  // clear buffer
+    while (getchar() != '\n');
 
     printf("Enter price: ");
     scanf("%f", &newNode->price);
 
     printf("Enter quantity in stock: ");
     scanf("%d", &newNode->quantity);
-    while (getchar() != '\n');  // clear buffer
+    while (getchar() != '\n');
 
 
     newNode->next = product_lis_head;
@@ -125,15 +125,11 @@ void display() {
 
     printf("\n--- SUPERMARKET INVENTORY ---\n");
     printf("----------------------------------------------------\n");
-    printf("| ID   | Name                 | Price    | Stock   |\n");
+    printf("| ID   | Name              | Price    | Stock   |\n");
     printf("----------------------------------------------------\n");
 
     while (current != NULL) {
-        printf("| %d | %s     | %f | %d |\n",
-               current->id,
-               current->name,
-               current->price,
-               current->quantity);
+        printf("| %d | %s     | %f | %d |\n",current->id,current->name,current->price,current->quantity);
         found = 1;
         current = current->next;
     }
@@ -163,20 +159,21 @@ void update_product() {
 
             printf("Enter the new quantity: ");
             scanf("%d", &curr->quantity);
-            while (getchar() != '\n'); // Clear buffer
+            while (getchar() != '\n');
 
-            printf("Product with ID %d was updated successfully.\n", id);
+            printf("Product was updated successfully.\n");
             return;
         }
         curr = curr->next;
     }
 
-    printf("A product with ID %d does not exist.\n", id);
+    printf("A product with such an ID does not exist.\n");
 }
 
 void delete_product() {
-    int id;
+
     printf("Enter product ID to delete: ");
+    int id;
     scanf("%d", &id);
     while (getchar() != '\n');
 
@@ -203,14 +200,16 @@ void delete_product() {
     }
 
     prev->next = current->next;
+
     free(current);
     printf("Product deleted successfully.\n");
 }
 
 void customer() {
-    int id, amount;
+    int id, amt;
 
     display();
+
     printf("Enter product ID to purchase: ");
     scanf("%d", &id);
 
@@ -220,18 +219,18 @@ void customer() {
         if (current->id == id) {
 
             printf("Enter quantity to buy (in stock: %d): ", current->quantity);
-            scanf("%d", &amount);
+            scanf("%d", &amt);
             while (getchar() != '\n');
 
-            if (amount <= 0 || amount > current->quantity) {
+            if (amt <= 0 || amt>current->quantity) {
                 printf("Invalid quantity.\n");
                 return;
             }
 
-            current->quantity -= amount;
+            current->quantity -= amt;
 
-            printf("Purchase successful! Total bill amount: $%.2f\n",
-                   current->price * amount);
+            printf("Purchase successful! Total bill amount: %.2f\n",
+                   current->price * amt);
             return;
         }
         current = current->next;
