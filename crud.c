@@ -9,7 +9,7 @@ typedef struct product Product;
 
 Product *product_lis_head = NULL;
 
-void loadDatabase() {
+
     FILE *file = fopen(DB_FILE, "rb");
     if (file == NULL) {
         printf("Database file not found. Starting with an empty list.\n");
@@ -246,3 +246,4 @@ void customer() {
 
     printf("Error: Product ID %d was not found.\n", id);
 }
+
