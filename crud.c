@@ -8,7 +8,7 @@ typedef struct product Product;
 
 Product *product_lis_head = NULL;
 
-void loadDatabase() {
+void load_dbfile() {
     FILE *file = fopen(DB_FILE, "rb");
     if (file == NULL) {
         printf("Database file not found. Starting with an empty list.\n");
@@ -46,39 +46,7 @@ void loadDatabase() {
     printf("Database loaded successfully into memory.\n");
 }
 
-void saveDatabase() {
-
-    FILE *file = fopen(DB_FILE, "wb");
-    if (file == NULL) {
-        printf("Error: Could not open database file.\n");
-        return;
-    }
-
-    Product *current = product_lis_head;
-    while (current != NULL) {
-        fwrite(current, sizeof(Product), 1, file);
-        current = current->next;
-    }
-
-    fclose(file);
-    printf("Database saved successfully.\n");
-}
-
-
-void free_memory() {
-    Product *current = product_lis_head;
-    Product *temp;
-
-    while (current != NULL) {
-        temp = current;
-        current = current->next;
-        free(temp);
-    }
-    product_lis_head = NULL;
-    printf("Memory freed.\n");
-}
-
-int getNextId() {
+int get_ID() {
     int last_id = 0;
     Product *current = product_lis_head;
 
@@ -92,14 +60,14 @@ int getNextId() {
 }
 
 void create() {
-    Product *newNode = (Product *)malloc(sizeof(Product));
+    Product *newNode = malloc(sizeof(Product));
     if (newNode == NULL) {
         printf("Malloc failed.\n");
         return;
     }
 
     newNode->next = NULL;
-    newNode->id = getNextId();
+    newNode->id = get_ID();
 
     printf("Enter product name: ");
     scanf("%[^\n]", newNode->name);
@@ -237,4 +205,35 @@ void customer() {
     }
 
     printf("Error: Product ID %d was not found.\n", id);
+}
+
+void save_dbfile() {
+
+    FILE *file = fopen(DB_FILE, "wb");
+    if (file == NULL) {
+        printf("Error: Could not open database file.\n");
+        return;
+    }
+
+    Product *current = product_lis_head;
+    while (current != NULL) {
+        fwrite(current, sizeof(Product), 1, file);
+        current = current->next;
+    }
+
+    fclose(file);
+    printf("Database saved successfully.\n");
+}
+
+void free_memory() {
+    Product *current = product_lis_head;
+    Product *temp;
+
+    while (current != NULL) {
+        temp = current;
+        current = current->next;
+        free(temp);
+    }
+    product_lis_head = NULL;
+    printf("Memory freed.\n");
 }

@@ -11,14 +11,14 @@ struct product {
     struct product *next;
 };
 
-void loadDatabase();
-void saveDatabase();
-void free_memory();
+void load_dbfile();
 void create();
 void display();
 void update_product();
 void delete_product();
 void customer();
-int getNextId();
+int get_ID();
+void save_dbfile();
+void free_memory();
 
 #endif
