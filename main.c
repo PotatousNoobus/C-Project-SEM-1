@@ -3,41 +3,36 @@
 #include "data.h"
 
 // Function to display the main menu
-void showMenu() {
+void menu() {
     printf("\n===================================\n");
-    printf("  Supermarket Management System\n");
+    printf("  SUPERMARKET MANAGEMENT SYSTEM \n");
     printf("===================================\n");
-    printf("1. Add New Product\n");
-    printf("2. Display All Products\n");
-    printf("3. Update Product\n");
-    printf("4. Delete Product\n");
-    printf("-----------------------------------\n");
+    printf("1. Add New Product (admin)\n");
+    printf("2. Display All Products (admin)\n");
+    printf("3. Update Product (admin)\n");
+    printf("4. Delete Product (admin)\n");
+    printf("************************************\n");
     printf("5. Make a Purchase (Customer)\n");
-    printf("-----------------------------------\n");
-    printf("0. Save & Exit\n"); // Changed text
+    printf("0. Exit\n");
+    printf("===================================\n");
     printf("===================================\n");
     printf("Enter your choice: ");
 }
 
 int main() {
     int choice;
-
-    // --- NEW ---
-    // Load the database from file into our list when program starts
     loadDatabase();
 
-    do {
-        showMenu();
+    scanf("%d",&choice);
+    while (choice!=0) {
+        menu();
 
-        // Validate input
-        if (scanf("%d", &choice) != 1) {
-            printf("Invalid input. Please enter a number.\n");
-            // Clear the invalid input from the buffer
+        if (choice!=1 && choice != 0 && choice!=2 && choice!=3 && choice !=4 && choice !=5) {
+            printf("Invalid input. Please enter a number (0 - 5).\n");
             while (getchar() != '\n');
-            continue; // Go back to the start of the loop
+            continue;
         }
 
-        // Clear the newline character left by scanf
         while (getchar() != '\n');
 
         switch (choice) {
@@ -57,16 +52,18 @@ int main() {
                 customer();
                 break;
             case 0:
-                // --- NEW ---
-                // Save the list back to file, then free memory
                 saveDatabase();
-                freeList();
-                printf("Exiting system. Goodbye!\n");
+                free_memory();
+
+                printf("Thank you for shopping with us. See you soon !!");
                 break;
             default:
                 printf("Invalid choice. Please try again.\n");
         }
-    } while (choice != 0);
+        scanf("%d",&choice);
+    }
+
+
 
     return 0;
 }
