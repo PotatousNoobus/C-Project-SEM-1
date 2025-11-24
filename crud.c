@@ -3,6 +3,8 @@
 #include <string.h>
 #include "data.h"
 
+// --- Global Variable ---
+// This is the "head" of our linked list. It's the entry point.
 typedef struct product Product;
 
 Product *product_lis_head = NULL;
@@ -16,7 +18,7 @@ void loadDatabase() {
 
     Product tempProduct;
     // Read one product at a time from the file
-    while (fread(&tempProduct, sizeof(Product), 1, file)) {
+    while (fread(&tempProduct, sizeof(Product), 1, file) == 1) {
         // For each product, allocate memory for a new list node
         Product *newNode = (Product *)malloc(sizeof(Product));
         if (newNode == NULL) {
@@ -25,10 +27,8 @@ void loadDatabase() {
             return;
         }
 
-
         *newNode = tempProduct;
-        // IMPORTANT: The 'next' pointer read from the file is garbage.
-        // We must set it to NULL.
+        // The 'next' pointer read from the file is garbage. Set it to NULL.
         newNode->next = NULL;
 
         // Add the new node to the end of our list
@@ -60,9 +60,7 @@ void saveDatabase() {
 
     Product *current = product_lis_head;
     while (current != NULL) {
-        // Write the *entire* product struct to the file.
-        // The 'next' pointer is also written, but it's okay.
-        // Our loadDatabase() function knows to ignore it.
+        // Write the entire product struct to the file.
         fwrite(current, sizeof(Product), 1, file);
         current = current->next;
     }
@@ -71,6 +69,7 @@ void saveDatabase() {
     printf("Database saved successfully.\n");
 }
 
+// Renamed & used in main.c and data.h
 void free_memory() {
     Product *current = product_lis_head;
     Product *temp;
@@ -98,45 +97,29 @@ int getNextId() {
 }
 
 void create() {
-
     Product *newNode = (Product *)malloc(sizeof(Product));
     if (newNode == NULL) {
         printf("Malloc failed.\n");
         return;
     }
-    newNode->next = NULL;
-    newNode->id = getNextId();
 
+    newNode->id = getNextId();
 
     printf("Enter product name: ");
     scanf("%[^\n]", newNode->name);
-    while (getchar() != '\n');
-
+    while (getchar() != '\n');  // clear buffer
 
     printf("Enter price: ");
     scanf("%f", &newNode->price);
 
     printf("Enter quantity in stock: ");
     scanf("%d", &newNode->quantity);
-    while (getchar() != '\n');
+    while (getchar() != '\n');  // clear buffer
 
-    if (product_lis_head == NULL){
-        product_lis_head = newNode;
-    }
-    else if (newNode->price < product_lis_head->price) {
-        newNode->next = product_lis_head;
-        product_lis_head = newNode;
-    }
-    else {
-        Product *current = product_lis_head;
-
-        while (current->next != NULL && current->next->price <= newNode->price) {
-            current = current->next;
-        }
-        newNode->next = current->next;
-        current->next = newNode;
-
-    }
+    // Correct linked list insertion:
+    // always link new node at the beginning
+    newNode->next = product_lis_head;
+    product_lis_head = newNode;
 
     printf("Product added successfully.\n");
 }
@@ -151,12 +134,16 @@ void display() {
     printf("----------------------------------------------------\n");
 
     while (current != NULL) {
-        printf("| %d | %s | %f | %d |\n",current->id,current->name,current->price,current->quantity);
+        printf("| %d | %s | %f | %d |\n",
+               current->id,
+               current->name,
+               current->price,
+               current->quantity);
         found = 1;
         current = current->next; // Move to the next item
     }
     printf("****************************************************\n");
-    if (found==0) {
+    if (!found) {
         printf("No products available.\n");
     }
 }
@@ -165,12 +152,12 @@ void update_product() {
     int id;
     printf("Enter product ID to update: ");
     scanf("%d", &id);
-    while (getchar() != '\n');
+    while (getchar() != '\n');  // Clear buffer
 
     Product *curr = product_lis_head;
     while (curr != NULL) {
         if (curr->id == id) {
-            printf("Found product: %s.\n",curr->name);
+            printf("Found product: %s.\n", curr->name);
 
             printf("Enter a new name: ");
             scanf("%[^\n]", curr->name);
@@ -189,7 +176,7 @@ void update_product() {
         curr = curr->next;
     }
 
-    printf("A product with ID %d does not exist.\n",id);
+    printf("A product with ID %d does not exist.\n", id);
 }
 
 void delete_product() {
@@ -201,30 +188,35 @@ void delete_product() {
     Product *current = product_lis_head;
     Product *prev = NULL;
 
-    if (current!=NULL && current->id == id) {
+    // If head node itself holds the id to be deleted
+    if (current != NULL && current->id == id) {
         product_lis_head = current->next;
         free(current);
         printf("Product deleted successfully.\n");
         return;
     }
+
+    // Search for the key to be deleted, keep track of previous node
     while (current != NULL && current->id != id) {
         prev = current;
         current = current->next;
     }
-    if (current==NULL) {
+
+    // If id was not present in list
+    if (current == NULL) {
         printf("Product not found.\n");
         return;
     }
-    else if (current != NULL) {
-        prev->next = current->next;
-        free(current);
-        printf("Product deleted successfully.\n");
-        return;
-    }
+
+    // Unlink the node from linked list
+    prev->next = current->next;
+    free(current);
+    printf("Product deleted successfully.\n");
 }
 
 void customer() {
     int id, amount;
+
     display();
     printf("Enter product ID to purchase: ");
     scanf("%d", &id);
@@ -238,15 +230,15 @@ void customer() {
             scanf("%d", &amount);
             while (getchar() != '\n'); // Clear buffer
 
-            if (amount <= 0 || amount > current->quantity ) {
+            if (amount <= 0 || amount > current->quantity) {
                 printf("Invalid quantity.\n");
                 return;
             }
 
             current->quantity -= amount;
 
-            printf("Purchase successful! Total bill amount: $%.2f\n", current->price * amount);
-            //printf("Remaining stock for %s: %d\n", current->name, current->quantity);
+            printf("Purchase successful! Total bill amount: $%.2f\n",
+                   current->price * amount);
             return;
         }
         current = current->next;
