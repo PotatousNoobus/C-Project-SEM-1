@@ -3,7 +3,7 @@
 This project is a simple Supermarket Management System implemented in C. It uses a singly linked list to manage a dynamic inventory of products and implements basic CRUD operations. The product data is persisted to a binary file (supermarket.dat) so the inventory state is saved between program executions.
 
 ------------------
-**CRUD FUNCTIONALITY**  
+*CRUD FUNCTIONALITY* 
 
 The CRUD operations, the core logic for managing the product data, are all implemented as separate functions within the crud.c file, which manipulates the in-memory linked list of products.
 
