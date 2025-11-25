@@ -1,2 +1,2 @@
-# C-Project-SEM-1
+# Project Report
 Our Endsem project for C
