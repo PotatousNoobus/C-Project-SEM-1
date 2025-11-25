@@ -4,6 +4,7 @@ This project is a simple Supermarket Management System implemented in C. It uses
 
 ------------------
 **CRUD FUNCTIONALITY**  
+
 The CRUD operations, the core logic for managing the product data, are all implemented as separate functions within the crud.c file, which manipulates the in-memory linked list of products.
 
 Create (C): Implemented in the create() function. It allocates memory for a new product node, prompts for details, and adds the node to the linked list.    
