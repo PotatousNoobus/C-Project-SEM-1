@@ -17,7 +17,6 @@ void display();
 void update_product();
 void delete_product();
 void customer();
-int get_ID();
 void save_dbfile();
 void free_memory();
 

@@ -11,7 +11,7 @@ Product *product_lis_head = NULL;
 void load_dbfile() {
     FILE *file = fopen(DB_FILE, "rb");
     if (file == NULL) {
-        printf("Database file not found. Starting with an empty list.\n");
+        printf("Database file doesnt exist. Starting with a new one.\n");
         return;
     }
 
@@ -46,44 +46,41 @@ void load_dbfile() {
     printf("Database loaded successfully into memory.\n");
 }
 
-int get_ID() {
-    int last_id = 0;
-    Product *current = product_lis_head;
-
-    while (current != NULL) {
-        if (current->id > last_id) {
-            last_id = current->id;
-        }
-        current = current->next;
-    }
-    return last_id + 1;
-}
-
 void create() {
-    Product *newNode = malloc(sizeof(Product));
-    if (newNode == NULL) {
+    Product *new_node = malloc(sizeof(Product));
+    if (new_node == NULL) {
         printf("Malloc failed.\n");
         return;
     }
 
-    newNode->next = NULL;
-    newNode->id = get_ID();
-
     printf("Enter product name: ");
-    scanf("%[^\n]", newNode->name);
+    scanf("%[^\n]", new_node->name);
     while (getchar() != '\n');
+
+    printf("Enter the product ID: ");
+    scanf("%d", &new_node->id);
 
     printf("Enter price: ");
-    scanf("%f", &newNode->price);
+    scanf("%f", &new_node->price);
 
     printf("Enter quantity in stock: ");
-    scanf("%d", &newNode->quantity);
+    scanf("%d", &new_node->quantity);
     while (getchar() != '\n');
 
+    new_node->next = NULL;
 
-    newNode->next = product_lis_head;
-    product_lis_head = newNode;
-
+    if (product_lis_head==NULL || new_node->price<product_lis_head->price) {
+        new_node->next = product_lis_head;
+        product_lis_head = new_node;
+    }
+    else {
+        Product *current = product_lis_head;
+        while (current->next != NULL && current->next->price <new_node->price) {
+            current = current->next;
+        }
+        new_node->next = current->next;
+        current->next = new_node;
+    }
     printf("Product added successfully.\n");
 }
 
@@ -92,35 +89,38 @@ void display() {
     int found = 0;
 
     printf("\n--- SUPERMARKET INVENTORY ---\n");
-    printf("----------------------------------------------------\n");
-    printf("| ID   | Name              | Price    | Stock   |\n");
-    printf("----------------------------------------------------\n");
+    printf("****************************************************\n");
 
     while (current != NULL) {
-        printf("| %d | %s     | %f | %d |\n",current->id,current->name,current->price,current->quantity);
+        printf("| %d   |%s         %f | %d |\n",current->id,current->name,current->price,current->quantity);
         found = 1;
         current = current->next;
     }
     printf("****************************************************\n");
-    if (!found) {
+    if (found==0) {
         printf("No products available.\n");
     }
 }
 
 void update_product() {
-    int id;
-    printf("Enter product ID to update: ");
-    scanf("%d", &id);
+
+    char name[30];
+
+    printf("Enter the product name to be updated: ");
+    scanf("%s",name);
     while (getchar() != '\n');
 
     Product *curr = product_lis_head;
     while (curr != NULL) {
-        if (curr->id == id) {
+        if (strcmp(curr->name, name) == 0) {
             printf("Found product: %s.\n", curr->name);
 
             printf("Enter a new name: ");
             scanf("%[^\n]", curr->name);
             while (getchar() != '\n');
+
+            printf("Enter the product ID: ");
+            scanf("%d",&curr->id);
 
             printf("Enter the new price: ");
             scanf("%f", &curr->price);
@@ -135,28 +135,28 @@ void update_product() {
         curr = curr->next;
     }
 
-    printf("A product with such an ID does not exist.\n");
+    printf("A product with such a name does not exist.\n");
 }
 
 void delete_product() {
 
-    printf("Enter product ID to delete: ");
-    int id;
-    scanf("%d", &id);
+    char name[30];
+    printf("Enter product name to delete: ");
+    scanf("%s", name);
     while (getchar() != '\n');
 
     Product *current = product_lis_head;
     Product *prev = NULL;
 
 
-    if (current != NULL && current->id == id) {
+    if (current != NULL && strcmp(current->name, name) == 0) {
         product_lis_head = current->next;
         free(current);
         printf("Product deleted successfully.\n");
         return;
     }
 
-    while (current != NULL && current->id != id) {
+    while (current != NULL && strcmp(current->name, name) != 0) {
         prev = current;
         current = current->next;
     }
@@ -174,17 +174,18 @@ void delete_product() {
 }
 
 void customer() {
-    int id, amt;
+    int amt;
+    char name[30];
 
     display();
 
-    printf("Enter product ID to purchase: ");
-    scanf("%d", &id);
+    printf("Enter product name to purchase: ");
+    scanf("%s", name);
 
     Product *current = product_lis_head;
 
     while (current != NULL) {
-        if (current->id == id) {
+        if (strcmp(current->name, name) == 0) {
 
             printf("Enter quantity to buy (in stock: %d): ", current->quantity);
             scanf("%d", &amt);
@@ -204,7 +205,7 @@ void customer() {
         current = current->next;
     }
 
-    printf("Error: Product ID %d was not found.\n", id);
+    printf("Error: Product %s was not found.\n", name);
 }
 
 void save_dbfile() {
