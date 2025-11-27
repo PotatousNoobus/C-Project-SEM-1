@@ -110,7 +110,7 @@ void update_product() {
     Product *curr = product_lis_head;
     while (curr != NULL) {
         if (strcmp(curr->name, name) == 0) {
-            printf("Found product: %s.\n", curr->name);
+            printf("Found product: %s ID: %d Quantity: %d Price: %f.\n", curr->name,curr->id,curr->quantity,curr->price);
 
             printf("Enter a new name: ");
             scanf("%[^\n]", curr->name);
@@ -235,4 +235,5 @@ void free_memory() {
     product_lis_head = NULL;
     printf("Memory freed.\n");
 }
+
 
