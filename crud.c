@@ -169,17 +169,22 @@ void delete_product() {
 
 void customer() {
     int amt;
+    int pid;
     char name[30];
 
     display();
 
     printf("Enter product name to purchase: ");
     scanf("%s", name);
+    while(getchar()!='\n');
+
+    printf("Enter product id: ");
+    scanf("%d",&pid);
 
     Product *current = product_lis_head;
 
     while (current != NULL) {
-        if (strcmp(current->name, name) == 0) {
+        if (strcmp(current->name, name) == 0 && current->id==pid) {
 
             printf("Enter quantity to buy (available: %d): ", current->quantity);
             scanf("%d", &amt);
@@ -232,6 +237,7 @@ void free_memory() {
     product_lis_head = NULL;
     printf("Memory freed.\n");
 }
+
 
 
 
