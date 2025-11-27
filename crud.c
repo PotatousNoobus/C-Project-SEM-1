@@ -187,11 +187,11 @@ void customer() {
     while (current != NULL) {
         if (strcmp(current->name, name) == 0) {
 
-            printf("Enter quantity to buy (in stock: %d): ", current->quantity);
+            printf("Enter quantity to buy (available: %d): ", current->quantity);
             scanf("%d", &amt);
             while (getchar() != '\n');
 
-            if (amt <= 0 || amt>current->quantity) {
+            if (amt <= 0 || amt > current->quantity) {
                 printf("Invalid quantity.\n");
                 return;
             }
@@ -238,3 +238,4 @@ void free_memory() {
     product_lis_head = NULL;
     printf("Memory freed.\n");
 }
+
