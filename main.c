@@ -3,6 +3,16 @@
 #include "data.h"
 
 void menu() {
+    
+}
+
+int main(void) {
+    int choice;
+
+    load_dbfile();
+
+    while (1) {
+
     printf("\n===================================\n");
     printf("  SUPERMARKET MANAGEMENT SYSTEM \n");
     printf("===================================\n");
@@ -16,15 +26,6 @@ void menu() {
     printf("===================================\n");
     printf("===================================\n");
     printf("Enter your choice: ");
-}
-
-int main(void) {
-    int choice;
-
-    load_dbfile();
-
-    while (1) {
-        menu();
 
         if (scanf("%d", &choice) != 1) {
             printf("Invalid input. Please enter a number (0 - 5).\n");
@@ -71,3 +72,4 @@ int main(void) {
 
     return 0;
 }
+
