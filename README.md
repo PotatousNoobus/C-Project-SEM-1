@@ -18,7 +18,7 @@ The CRUD operations, the core logic for managing the product data, are all imple
 The customer() function is a specialized operation that acts like a combination of a read (to display stock) and an update (to decrement quantity).  
 
 -------------------
-**Persistance Implementation**  
+## Persistance Implementation
 
 Persistance is achieved by reading from and writing to the binary file supermarket.dat. This ensures that the product data remains available even after the program exits.   
 
