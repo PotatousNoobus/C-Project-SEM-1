@@ -20,7 +20,6 @@ void menu() {
 
 int main(void) {
     int choice;
-    int chr;
 
     load_dbfile();
 
@@ -30,11 +29,11 @@ int main(void) {
         if (scanf("%d", &choice) != 1) {
             printf("Invalid input. Please enter a number (0 - 5).\n");
 
-            while ((chr = getchar()) != '\n' && chr != EOF);
+            while (getchar() != '\n');
             continue;
         }
 
-        while ((chr = getchar()) != '\n' && chr != EOF);
+        while (getchar() != '\n');
 
         if (choice < 0 || choice > 5) {
             printf("Invalid input. Please enter a number (0 - 5).\n");

@@ -48,11 +48,13 @@ void load_dbfile() {
 
 void create() {
     Product *new_node = malloc(sizeof(Product));
-
+    if (new_node == NULL) {
+        printf("Malloc failed.\n");
+        return;
+    }
 
     printf("Enter product name: ");
     scanf("%[^\n]", new_node->name);
-    while (getchar() != '\n');
 
     printf("Enter the product ID: ");
     scanf("%d", &new_node->id);
@@ -62,9 +64,10 @@ void create() {
 
     printf("Enter quantity in stock: ");
     scanf("%d", &new_node->quantity);
-    while (getchar() != '\n');
+
 
     new_node->next = NULL;
+
 
     if (product_lis_head==NULL || new_node->price<product_lis_head->price) {
         new_node->next = product_lis_head;
@@ -235,5 +238,3 @@ void free_memory() {
     product_lis_head = NULL;
     printf("Memory freed.\n");
 }
-
-
