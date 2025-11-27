@@ -48,10 +48,7 @@ void load_dbfile() {
 
 void create() {
     Product *new_node = malloc(sizeof(Product));
-    if (new_node == NULL) {
-        printf("Malloc failed.\n");
-        return;
-    }
+
 
     printf("Enter product name: ");
     scanf("%[^\n]", new_node->name);
@@ -238,3 +235,4 @@ void free_memory() {
     product_lis_head = NULL;
     printf("Memory freed.\n");
 }
+
