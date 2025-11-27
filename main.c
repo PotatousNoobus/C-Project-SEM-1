@@ -2,10 +2,6 @@
 #include <stdlib.h>
 #include "data.h"
 
-void menu() {
-    
-}
-
 int main(void) {
     int choice;
 
@@ -72,4 +68,5 @@ int main(void) {
 
     return 0;
 }
+
 
