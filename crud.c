@@ -148,7 +148,6 @@ void delete_product() {
     Product *current = product_lis_head;
     Product *prev = NULL;
 
-
     if (current != NULL && strcmp(current->name, name) == 0) {
         product_lis_head = current->next;
         free(current);
@@ -161,16 +160,15 @@ void delete_product() {
         current = current->next;
     }
 
-
+    
     if (current == NULL) {
         printf("Product not found.\n");
         return;
     }
 
     prev->next = current->next;
-
     free(current);
-    printf("Product deleted successfully.\n");
+    printf("Product deleted successfully\n");
 }
 
 void customer() {
@@ -238,4 +236,5 @@ void free_memory() {
     product_lis_head = NULL;
     printf("Memory freed.\n");
 }
+
 
